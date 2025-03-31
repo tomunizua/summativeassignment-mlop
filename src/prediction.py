@@ -4,9 +4,11 @@ import os
 import numpy as np
 import preprocessing  
 
+# Create the S3 client
+s3 = boto3.client('s3', region_name='eu-north-1')
+
 def load_model_from_s3(bucket_name, s3_file_path, local_file_path):
     """Loads a model from Amazon S3."""
-    s3 = boto3.client('s3')
     try:
         s3.download_file(bucket_name, s3_file_path, local_file_path)
         model = tf.keras.models.load_model(local_file_path)
@@ -36,7 +38,6 @@ loaded_model = load_model_from_s3(bucket_name, s3_model_file, local_model_path)
 s3_image_path = "data/test/images/20190207_172525_jpg.rf.f8dbadf227b82ad4b5caf737ed904a06.jpg" # This is a placeholder.
 
 # Download test image from S3
-s3 = boto3.client('s3')
 local_image_path = "/tmp/test_image.jpg"
 s3.download_file(bucket_name, s3_image_path, local_image_path)
 

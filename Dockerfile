@@ -14,9 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/preprocessing.py .
 COPY src/prediction.py .
 COPY src/model.py .
+COPY app.py .
 
 # Set the environment variable for the model path
 ENV MODEL_PATH /app/models/second_model.keras
 
 # Command to run 
-CMD ["python", "prediction.py"]
+CMD ["python", "app.py"]

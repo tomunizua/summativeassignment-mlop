@@ -5,3 +5,4 @@ Pillow
 b2sdk
 requests
 boto3
+flask

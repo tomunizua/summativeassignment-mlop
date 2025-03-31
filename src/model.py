@@ -5,9 +5,11 @@ import preprocessing
 import os
 import pickle
 
+# Create the S3 client
+s3 = boto3.client('s3', region_name='eu-north-1')
+
 def load_model_from_s3(bucket_name, s3_file_path, local_file_path):
     """Loads a TensorFlow Keras model from Amazon S3."""
-    s3 = boto3.client('s3')
     try:
         s3.download_file(bucket_name, s3_file_path, local_file_path)
         model = tf.keras.models.load_model(local_file_path)
@@ -18,7 +20,6 @@ def load_model_from_s3(bucket_name, s3_file_path, local_file_path):
 
 def save_model_to_s3(bucket_name, s3_file_path, local_file_path):
     """Saves a TensorFlow Keras model to Amazon S3."""
-    s3 = boto3.client('s3')
     try:
         s3.upload_file(local_file_path, bucket_name, s3_file_path)
         print(f"Model saved to S3: {s3_file_path}")
@@ -29,7 +30,6 @@ def retrain_model_from_s3(bucket_name, s3_model_file, local_model_path, s3_test_
     """Retrains the model using test data from S3."""
     try:
         loaded_model = load_model_from_s3(bucket_name, s3_model_file, local_model_path)
-        s3 = boto3.client('s3')
 
         # Download test CSV from S3
         s3.download_file(bucket_name, s3_test_csv, local_test_csv)
@@ -62,7 +62,6 @@ def retrain_model_from_s3(bucket_name, s3_model_file, local_model_path, s3_test_
 
 def load_label_encoder_from_s3(bucket_name, s3_file_path, local_file_path):
     """Loads a LabelEncoder from Amazon S3."""
-    s3 = boto3.client('s3')
     try:
         s3.download_file(bucket_name, s3_file_path, local_file_path)
         with open(local_file_path, 'rb') as f:
