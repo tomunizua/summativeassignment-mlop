@@ -1,0 +1,7 @@
+tensorflow
+scikit-learn
+pandas
+Pillow
+b2sdk
+requests
+boto3
