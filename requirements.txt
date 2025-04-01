@@ -6,3 +6,4 @@ b2sdk
 requests
 boto3
 flask
+psycopg2-binary

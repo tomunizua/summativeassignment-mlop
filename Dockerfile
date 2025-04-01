@@ -10,10 +10,13 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create the src directory
+RUN mkdir src
+
 # Copy the application code
-COPY src/preprocessing.py .
-COPY src/prediction.py .
-COPY src/model.py .
+COPY src/preprocessing.py src/
+COPY src/prediction.py src/
+COPY src/model.py src/
 COPY app.py .
 
 # Set the environment variable for the model path
