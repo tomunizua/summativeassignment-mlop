@@ -8,10 +8,11 @@ from src import model
 import pandas as pd
 import pickle
 import tempfile
+import boto3
 
 app = Flask(__name__)
 
-# SQLite Database Configuration
+# Database Configuration
 DATABASE_FILE = "my_base.db"
 
 # Model Loading (from S3)
@@ -31,49 +32,46 @@ label_map = {
 def get_db_connection():
     """Establishes a database connection."""
     try:
-        conn = sqlite3.connect(DATABASE_FILE)
+        temp_dir = tempfile.gettempdir()
+        local_db_path = os.path.join(temp_dir, "my_base.db")
+
+        # Check if the database file exists locally
+        if not os.path.exists(local_db_path):
+            # Download from S3 if it doesn't exist
+            print("Downloading database from S3...")
+            s3 = boto3.client("s3")
+            s3.download_file(bucket_name, DATABASE_FILE, local_db_path)
+            print("Database downloaded from S3.")
+
+        conn = sqlite3.connect(local_db_path)
         return conn
     except sqlite3.Error as e:
         print(f"Error connecting to database: {e}")
         return None
 
-def create_table():
-    """Creates the 'images' table if it doesn't exist."""
-    conn = get_db_connection()
-    if conn:
-        try:
-            cur = conn.cursor()
-            print("Creating table 'images'...")
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS images (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    image_data BLOB NOT NULL,
-                    label TEXT NOT NULL,
-                    data_type TEXT DEFAULT 'train'
-                );
-            """)
-            conn.commit()
-            conn.close()
-            print("Table 'images' created or already exists.")
-        except sqlite3.Error as e:
-            print(f"Error creating table: {e}")
-    else:
-        print("Could not connect to database")
-create_table()
-
 def get_image_from_db(image_id):
     """Retrieves image data from the database."""
     conn = get_db_connection()
-    if conn:
-        try:
-            cur = conn.cursor()
-            cur.execute("SELECT image_data FROM images WHERE id = ?;", (image_id,))
-            image_data = cur.fetchone()[0]
-            conn.close()
+    if conn is None:
+        return None
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT image_data FROM images WHERE ROWID = ?;", (image_id,))
+
+        row = cur.fetchone()
+        if row:
+            image_data = row[0]
             return image_data
-        except sqlite3.Error as e:
-            print(f"Error retrieving image from database: {e}")
-            return None
+        else:
+            return None  # Return None if no matching row is found
+
+    except sqlite3.Error as e:
+        print(f"Error retrieving image from database: {e}")
+        return None
+
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/predict', methods=['POST'])
 def predict():

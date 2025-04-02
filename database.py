@@ -5,6 +5,30 @@ import pandas as pd
 # Database connection details 
 DATABASE_FILE = "my_base.db"
 
+def create_table():
+    """Creates the 'images' table if it doesn't exist."""
+    conn = sqlite3.connect(DATABASE_FILE)
+    if conn:
+        try:
+            cur = conn.cursor()
+            print("Creating table 'images'...")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS images (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    image_data BLOB NOT NULL,
+                    label TEXT NOT NULL,
+                    data_type TEXT DEFAULT 'train'
+                );
+            """)
+            conn.commit()
+            conn.close()
+            print("Table 'images' created or already exists.")
+        except sqlite3.Error as e:
+            print(f"Error creating table: {e}")
+    else:
+        print("Could not connect to database")
+create_table()
+
 def insert_image_data(image_path, label):
     """Inserts image data and label into the database."""
     try:
