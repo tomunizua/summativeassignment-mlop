@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedImage = null;
 
+    imagePlaceholder.style.display = "flex"; // Ensure placeholder is visible on load
+
     imageUpload.addEventListener('change', (event) => {
         selectedImage = event.target.files[0];
         imageNumber.value = ""; // Clear library selection
@@ -18,7 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewImage.src = e.target.result;
             };
             reader.readAsDataURL(selectedImage);
+        } else {
+            previewImage.src = ""; // Clear preview if no image selected
         }
+        imagePlaceholder.style.display = "none";
+        previewImage.style.display = "block";
     });
 
     imageNumber.addEventListener('change', () => {
@@ -35,7 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Image not found.');
                     previewImage.src = "";
                 });
+        } else {
+            previewImage.src = ""; // Clear preview if no image number
         }
+        imagePlaceholder.style.display = "none";
+        previewImage.style.display = "block";
     });
 
     predictButton.addEventListener('click', () => {
@@ -43,25 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // Image upload
             const formData = new FormData();
             formData.append('image', imageUpload.files[0]);
-    
+
             fetch('/predict_upload', {
                 method: 'POST',
                 body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.prediction) {
-                    predictionResult.textContent = `Prediction: ${data.prediction}`;
-                } else if (data.error) {
-                    predictionResult.textContent = `Prediction failed: ${data.error}`;
-                } else {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.prediction) {
+                        predictionResult.textContent = `Prediction: ${data.prediction}`;
+                    } else if (data.error) {
+                        predictionResult.textContent = `Prediction failed: ${data.error}`;
+                    } else {
+                        predictionResult.textContent = 'Prediction failed.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     predictionResult.textContent = 'Prediction failed.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                predictionResult.textContent = 'Prediction failed.';
-            });
+                });
         } else if (imageNumber.value) {
             // Library selection
             fetch('/predict_lib', {
@@ -71,20 +81,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ image_id: imageNumber.value }),
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.prediction) {
-                    predictionResult.textContent = `Prediction: ${data.prediction}`;
-                } else if (data.error) {
-                    predictionResult.textContent = `Prediction failed: ${data.error}`;
-                } else {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.prediction) {
+                        predictionResult.textContent = `Prediction: ${data.prediction}`;
+                    } else if (data.error) {
+                        predictionResult.textContent = `Prediction failed: ${data.error}`;
+                    } else {
+                        predictionResult.textContent = 'Prediction failed.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     predictionResult.textContent = 'Prediction failed.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                predictionResult.textContent = 'Prediction failed.';
-            });
+                });
         } else {
             alert("Please select an image or enter an image number.");
         }
@@ -178,16 +188,4 @@ document.addEventListener('DOMContentLoaded', () => {
         previewImage.style.display = "block";
     });
 
-    imageNumber.addEventListener("change", () => {
-        imagePlaceholder.style.display = "none";
-    });
-
-    imageUpload.addEventListener("change", () => {
-        imagePlaceholder.style.display = "none";
-    });
-
-    if (previewImage.src === "") {
-        imagePlaceholder.style.display = "flex";
-        previewImage.style.display = "none";
-    }
 });
