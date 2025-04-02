@@ -3,6 +3,7 @@ import tensorflow as tf
 import os
 import numpy as np
 import preprocessing  
+import tempfile
 
 # Create the S3 client
 s3 = boto3.client('s3', region_name='eu-north-1')
@@ -29,7 +30,8 @@ def make_predictions(model, preprocessed_images):
 
 bucket_name = "theosummative"
 s3_model_file = "models/second_model.keras"
-local_model_path = "/tmp/model.keras"  # inside the docker container
+temp_dir = tempfile.gettempdir()
+local_model_path = os.path.join(temp_dir, "model.keras")
 
 loaded_model = load_model_from_s3(bucket_name, s3_model_file, local_model_path)
 

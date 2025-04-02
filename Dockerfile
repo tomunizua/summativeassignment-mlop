@@ -19,6 +19,9 @@ COPY src/prediction.py src/
 COPY src/model.py src/
 COPY app.py .
 
+# Copy the database file
+COPY my_base.db .
+
 # Set the environment variable for the model path
 ENV MODEL_PATH /app/models/second_model.keras
 

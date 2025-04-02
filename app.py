@@ -20,6 +20,7 @@ s3_model_file = "models/second_model.keras"
 temp_dir = tempfile.gettempdir()
 local_model_path = os.path.join(temp_dir, "model.keras")
 loaded_model = model.load_model_from_s3(bucket_name, s3_model_file, local_model_path)
+print(f"Model loaded successfully: {loaded_model is not None}")
 
 # Define label mapping
 label_map = {
