@@ -1,0 +1,214 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4faff;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 80%; 
+    max-width: 900px;
+    padding: 40px;
+    background-color: #e0f2fe;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #333f45;
+    margin-bottom: 30px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.prediction-section {
+    flex: 1;
+    text-align: left;
+    padding-right: 20px;
+}
+
+.result-section {
+    flex: 1;
+    text-align: center;
+    padding-left: 20px;
+}
+
+.prediction-options {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-upload-button {
+    padding: 15px 30px;
+    border: 2px dashed #a8dadc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #4a6572;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.file-upload-button i {
+    margin-right: 10px;
+}
+
+input[type="number"] {
+    padding: 10px;
+    border: 1px solid #a8dadc;
+    border-radius: 5px;
+    width: 80%;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    background-color: #18b6bc;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #006a88;
+}
+
+.or-separator {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #4a6572;
+}
+
+.image-placeholder {
+    width: 300px;
+    height: 300px;
+    border: 2px dashed #a8dadc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #a8dadc;
+    font-size: 24px;
+}
+
+.image-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#previewImage {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#predictionResult {
+    font-size: 18px;
+    margin-top: 20px;
+    color: #4a6572;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #4a6572;
+}
+
+.retrain-section, .navigation {
+    text-align: center;
+    margin-top: 30px;
+    color: #4a6572;
+}
+
+.navigation a {
+    text-decoration: none;
+    color: #72c5d4;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 2px solid #72c5d4;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.navigation a:hover {
+    background-color: #ffffff;
+    color: #4a6572;
+}
+
+.retrain-section {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.retrain-section h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.retrain-section p {
+    margin-bottom: 15px;
+    color: #555;
+}
+
+/* Style for the file upload button */
+.retrain-section .file-upload-button {
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Hide the actual file input */
+.retrain-section input[type="file"] {
+    display: none;
+}
+
+.retrain-section button#uploadRetrainDataButton {
+    background-color: #18b6bc;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.retrain-section button#uploadRetrainDataButton:hover {
+    background-color: #006a88; 
+}
+
+/* Style for the retrain metrics display */
+#retrainMetrics {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #eee;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    white-space: pre-wrap; /* Preserve formatting */
+}

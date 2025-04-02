@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Prediction & Retraining</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>BXW Model Prediction & Retraining</h1>
+
+        <div class="main-content">
+            <div class="prediction-section">
+                <h2>Prediction</h2>
+                <div class="prediction-options">
+                    <div class="upload-option">
+                        <label for="imageUpload" class="file-upload-button">
+                            <i class="fas fa-upload"></i> Choose File
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="or-separator">OR</div>
+                    <div class="library-option">
+                        <label for="imageNumber">Select from Library (1-1500):</label>
+                        <input type="number" id="imageNumber" min="1" max="1500">
+                    </div>
+                </div>
+                <button id="predictButton">Predict</button>
+            </div>
+
+            <div class="result-section">
+                <div class="image-placeholder" id="imagePlaceholder">
+                    <i class="fas fa-image"></i>
+                    <p>Upload or select an image</p>
+                </div>
+                <div class="image-preview-container">
+                    <img id="previewImage" src="#" alt="Preview" style="display: none;">
+                </div>
+                <p id="predictionResult"></p>
+            </div>
+        </div>
+
+        <div class="retrain-section">
+            <h2>Retrain Model</h2>
+            <p>Retrain the model with uploaded images in a ZIP file.</p>
+            <input type="file" id="retrainDataUpload" accept=".zip">
+            <button id="uploadRetrainDataButton">Upload Retrain Data</button>
+            <div id="retrainMetrics"></div>
+        </div>
+
+        <div class="navigation">
+            <p>Click the button below to view model visualizations:</p>
+            <a href="visualizations.html">Visualizations</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

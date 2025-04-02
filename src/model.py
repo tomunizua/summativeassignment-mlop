@@ -10,6 +10,9 @@ import sqlite3
 # Create the S3 client
 s3 = boto3.client('s3', region_name='eu-north-1')
 
+# Database Configuration
+DATABASE_FILE = "my_base.db"
+
 def load_model_from_s3(bucket_name, s3_file_path, local_file_path):
     """Loads a TensorFlow Keras model from Amazon S3."""
     try:
@@ -29,6 +32,42 @@ def save_model_to_s3(bucket_name, s3_file_path, local_file_path):
         print(f"Model saved to S3: {s3_file_path}")
     except Exception as e:
         print(f"Error saving model to S3: {e}")
+
+def insert_retrain_image_data(image_path, label, data_type='retrain'):
+    """Inserts retrain image data and label into the database."""
+    try:
+        conn = sqlite3.connect(DATABASE_FILE)
+        cur = conn.cursor()
+
+        with open(image_path, 'rb') as image_file:
+            image_data = image_file.read()
+
+        cur.execute("INSERT INTO images (image_data, label, data_type) VALUES (?, ?, ?);", (sqlite3.Binary(image_data), label, data_type))
+
+        conn.commit()
+        conn.close()
+        print(f"Retrain image '{image_path}' inserted successfully.")
+
+    except sqlite3.Error as e:
+        print(f"Error inserting retrain image: {e}")
+
+def populate_retrain_database_from_csv(csv_path, images_dir):
+    """Populates the database with retrain data using a CSV and images directory."""
+    try:
+        df = pd.read_csv(csv_path)
+
+        for index, row in df.iterrows():
+            image_filename = row['filename']
+            label = row['class']
+            image_path = os.path.join(images_dir, image_filename)
+
+            if os.path.exists(image_path):
+                insert_retrain_image_data(image_path, label)
+            else:
+                print(f"Warning: Retrain image '{image_path}' not found.")
+
+    except Exception as e:
+        print(f"Error populating retrain database from CSV: {e}")
 
 def get_retrain_data_from_db(database_file):
     """Retrieves all retraining data from the database."""

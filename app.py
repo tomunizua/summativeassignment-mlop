@@ -1,14 +1,18 @@
 import os
 from flask import Flask, request, jsonify
-import sqlite3
 import tensorflow as tf
 import numpy as np
 from src import preprocessing
 from src import model
-import pandas as pd
-import pickle
 import tempfile
 import boto3
+from PIL import Image
+import io
+import zipfile
+import sqlite3
+from tabulate import tabulate 
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -73,8 +77,38 @@ def get_image_from_db(image_id):
         if conn:
             conn.close()
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route('/predict_upload', methods=['POST'])
+def predict_upload():
+    try:
+        if 'image' in request.files:
+            # Image uploaded via file upload
+            image_file = request.files['image']
+            try:
+                img = Image.open(io.BytesIO(image_file.read()))
+                temp_dir = tempfile.gettempdir()
+                local_image_path = os.path.join(temp_dir, "uploaded_image.jpg")
+                img.save(local_image_path)
+
+                preprocessed_image = preprocessing.preprocess_image(local_image_path)
+                preprocessed_images = np.expand_dims(preprocessed_image, axis=0)
+
+                predictions = model.make_predictions(loaded_model, preprocessed_images)
+                predicted_label = int(predictions[0])
+                predicted_class = label_map.get(predicted_label, "Unknown")
+
+                return jsonify({'prediction': predicted_class})
+
+            except Exception as e:
+                return jsonify({'error': f'Error processing uploaded image: {str(e)}'}), 500
+
+        else:
+            return jsonify({'error': 'No image provided'}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/predict_lib', methods=['POST'])
+def predict_lib():
     try:
         data = request.get_json()
         image_id = data['image_id']
@@ -110,6 +144,67 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+retraining_status = {}  # Dictionary to store retraining status
+
+def retrain_and_monitor(retrain_id, zip_file_path):
+    """Retrains the model and updates the retraining status."""
+    retraining_status[retrain_id] = {"status": "retraining", "progress": 0, "message": "Retraining started"}
+    try:
+        # Extract images from the zip file
+        temp_dir = os.path.join(tempfile.gettempdir(), f"retrain_images_{retrain_id}")
+        os.makedirs(temp_dir, exist_ok=True)
+
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
+
+        # Retrain the model using the extracted images
+        metrics = model.retrain_model_from_folder(temp_dir, bucket_name, s3_model_file, local_model_path) #change to your function.
+
+        global loaded_model
+        loaded_model = model.load_model_from_s3(bucket_name, "models/retrained_model.keras", os.path.join(tempfile.gettempdir(), "retrained_model.keras"))
+
+        retraining_status[retrain_id] = {"status": "completed", "progress": 100, "message": "Retraining completed", "metrics": metrics}
+
+    except Exception as e:
+        retraining_status[retrain_id] = {"status": "failed", "progress": 0, "message": f"Retraining failed: {e}"}
+
+@app.route('/upload_retrain_data', methods=['POST'])
+def upload_retrain_data():
+    """Uploads a zip file with images and _annotations.csv and saves data to the database."""
+    try:
+        if 'zip_file' not in request.files:
+            return jsonify({'error': 'No zip file uploaded'}), 400
+
+        zip_file = request.files['zip_file']
+        if zip_file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        temp_dir = tempfile.gettempdir()
+        extracted_dir = os.path.join(temp_dir, 'retrain_data_extracted')
+        os.makedirs(extracted_dir, exist_ok=True)
+
+        with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+            zip_ref.extractall(extracted_dir)
+
+        images_dir = os.path.join(extracted_dir, 'images')
+        csv_path = os.path.join(extracted_dir, '_annotations.csv')
+
+        if os.path.exists(csv_path) and os.path.exists(images_dir):
+            model.populate_retrain_database_from_csv(csv_path, images_dir)
+            return jsonify({'message': 'Data uploaded to database successfully'}), 200
+        else:
+            return jsonify({'error': 'Missing images folder or _annotations.csv in zip file'}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/retrain_status/<retrain_id>', methods=['GET'])
+def get_retrain_status(retrain_id):
+    """Gets the status of a retraining process."""
+    if retrain_id not in retraining_status:
+        return jsonify({'error': 'Retraining process not found'}), 404
+    return jsonify(retraining_status[retrain_id])
+    
 @app.route('/retrain', methods=['POST'])
 def retrain():
     """Triggers retraining using data from the database and returns metrics."""
@@ -118,8 +213,19 @@ def retrain():
         global loaded_model
         loaded_model = model.load_model_from_s3(bucket_name, "models/retrained_model.keras", os.path.join(tempfile.gettempdir(), "retrained_model.keras"))
 
-        return jsonify({'message': 'Retraining completed', 'metrics': metrics})
+        accuracy = metrics['accuracy']
+        f1_score = metrics['f1_score']
+        precision = metrics['precision']
+        recall = metrics['recall']
 
+        metric_names = ["Accuracy", "F1 Score", "Precision", "Recall"]
+        metric_values = [accuracy, f1_score, precision, recall]
+
+        table_data = [metric_values]  # Values as a single row
+        table_string = tabulate(table_data, headers=metric_names, tablefmt="grid")
+
+        return jsonify({'message': 'Retraining completed', 'metrics_table': table_string})
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
