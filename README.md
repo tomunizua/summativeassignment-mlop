@@ -13,7 +13,7 @@ This application provides a user-friendly interface for image prediction and mod
 ### Frontend Usage
 
 1.  **Access the Web Application:**
-    * Open the following URL in your web browser: [https://curious-pegasus-f40b0f.netlify.app/] (or open `index.html` locally - API is not deployed so the web link only shows a non-functional UI).
+    * Open the following URL in your web browser: [[link](https://curious-pegasus-f40b0f.netlify.app/)] (or open `index.html` locally - API is not deployed so the web link only shows a non-functional UI).
 
 2.  **Image Prediction:**
     * **Upload Image:** Click "Choose File" under the "Prediction" section to upload an image.
@@ -22,7 +22,7 @@ This application provides a user-friendly interface for image prediction and mod
     * The predicted result will be displayed below the image preview.
 
 3.  **Model Retraining:**
-    * Click "Choose File" under the "Retrain Model" section to upload a ZIP file containing new training images.
+    * Click "Choose File" under the "Retrain Model" section to upload a ZIP file containing new training images (you can test with the retrain.zip file in the repo).
     * Click "Start Retrain" to initiate the retraining process.
     * Retraining metrics will be displayed after the process completes.
 
