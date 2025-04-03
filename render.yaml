@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: bxw-model-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: AWS_DEFAULT_REGION
+        value: eu-north-1
