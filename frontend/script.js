@@ -6,14 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const predictionResult = document.getElementById('predictionResult');
     const retrainButton = document.getElementById('retrainButton');
     const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const retrainZipUpload = document.getElementById('retrainZipUpload');
+    const uploadRetrainDataButton = document.getElementById('uploadRetrainDataButton');
 
     let selectedImage = null;
 
-    imagePlaceholder.style.display = "flex"; // Ensure placeholder is visible on load
+    imagePlaceholder.style.display = "flex";
 
     imageUpload.addEventListener('change', (event) => {
         selectedImage = event.target.files[0];
-        imageNumber.value = ""; // Clear library selection
+        imageNumber.value = "";
         if (selectedImage) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -21,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             reader.readAsDataURL(selectedImage);
         } else {
-            previewImage.src = ""; // Clear preview if no image selected
+            previewImage.src = "";
         }
         imagePlaceholder.style.display = "none";
         previewImage.style.display = "block";
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     imageNumber.addEventListener('change', () => {
         selectedImage = imageNumber.value;
-        imageUpload.value = ""; // Clear file upload
+        imageUpload.value = "";
         if (selectedImage) {
             fetch(`/image/${selectedImage}`)
                 .then(response => response.blob())
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     previewImage.src = "";
                 });
         } else {
-            previewImage.src = ""; // Clear preview if no image number
+            previewImage.src = "";
         }
         imagePlaceholder.style.display = "none";
         previewImage.style.display = "block";
@@ -50,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     predictButton.addEventListener('click', () => {
         if (imageUpload.files.length > 0) {
-            // Image upload
             const formData = new FormData();
             formData.append('image', imageUpload.files[0]);
 
@@ -73,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     predictionResult.textContent = 'Prediction failed.';
                 });
         } else if (imageNumber.value) {
-            // Library selection
             fetch('/predict_lib', {
                 method: 'POST',
                 headers: {
@@ -101,13 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     uploadRetrainDataButton.addEventListener('click', () => {
-        const fileInput = document.getElementById('retrainDataUpload');
-        if (!fileInput.files[0]) {
+        retrainZipUpload.click();
+    });
+
+    retrainButton.addEventListener('click', () => {
+        if (!retrainZipUpload.files[0]) {
             alert("Please select a ZIP file to upload.");
             return;
         }
 
-        const file = fileInput.files[0];
+        const file = retrainZipUpload.files[0];
         const formData = new FormData();
         formData.append('zip_file', file);
 
@@ -115,58 +118,40 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.retrain_id) {
-                monitorRetraining(data.retrain_id);
-            } else {
-                alert(data.message || 'Upload failed.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Upload failed.');
-        });
-    });
-
-    retrainButton.addEventListener('click', () => {
-        fetch('/retrain', {
-            method: 'POST',
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.retrain_id) {
-                monitorRetraining(data.retrain_id);
-            } else {
-                alert(data.message || 'Retraining failed.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Retraining failed.');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.retrain_id) {
+                    monitorRetraining(data.retrain_id);
+                } else {
+                    alert(data.message || 'Upload failed.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Upload failed.');
+            });
     });
 
     function monitorRetraining(retrainId) {
         const intervalId = setInterval(() => {
             fetch(`/retrain_status/${retrainId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'completed' || data.status === 'failed') {
-                    clearInterval(intervalId);
-                    alert(data.message);
-                    if (data.metrics && data.metrics.metrics_table) {
-                        displayRetrainMetricsTable(data.metrics.metrics_table);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        clearInterval(intervalId);
+                        alert(data.message);
+                        if (data.metrics && data.metrics.metrics_table) {
+                            displayRetrainMetricsTable(data.metrics.metrics_table);
+                        }
                     }
-                }
-                console.log(`Retraining status: ${data.status}, progress: ${data.progress}%`);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                clearInterval(intervalId);
-                alert('Monitoring failed.');
-            });
-        }, 5000); // Poll every 5 seconds
+                    console.log(`Retraining status: ${data.status}, progress: ${data.progress}%`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    clearInterval(intervalId);
+                    alert('Monitoring failed.');
+                });
+        }, 5000);
     }
 
     function displayRetrainMetricsTable(tableString) {
@@ -187,5 +172,4 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePlaceholder.style.display = "none";
         previewImage.style.display = "block";
     });
-
 });
