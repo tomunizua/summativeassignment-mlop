@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: bxw-model-api
+    name: bxw-model
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
