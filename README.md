@@ -1,4 +1,4 @@
-# BXW Model Prediction & Retraining Application
+# BXW Model Deployment Project
 
 ## Project Description
 
@@ -6,18 +6,14 @@ This application provides a user-friendly interface for image prediction and mod
 
 ## Video Demo
 
-[YouTube Demo Link]()
-
-## URLs
-
-* **Frontend:** [] 
+[YouTube Demo Link](https://youtu.be/S50ycIdLc3w)
 
 ## Usage Instructions
 
 ### Frontend Usage
 
 1.  **Access the Web Application:**
-    * Open the following URL in your web browser: [URL_HERE] (or open `index.html` locally if not deployed).
+    * Open the following URL in your web browser: [https://curious-pegasus-f40b0f.netlify.app/] (or open `index.html` locally - API is not deployed so the web link only shows a non-functional UI).
 
 2.  **Image Prediction:**
     * **Upload Image:** Click "Choose File" under the "Prediction" section to upload an image.
@@ -70,7 +66,7 @@ This application provides a user-friendly interface for image prediction and mod
         * Provide an image ID from the library for prediction.
         * Use `application/json` with the request body `{"image_id": image_id}`.
         * Response: JSON with the prediction result.
-    * **`/upload_retrain_images` (POST):**
+    * **`/upload_retrain_data` (POST):**
         * Upload a ZIP file containing retraining images.
         * Use `multipart/form-data` with the file field named `zip_file`.
         * Response: JSON with retrain id, used for monitoring.
@@ -84,5 +80,4 @@ This application provides a user-friendly interface for image prediction and mod
 ### Important Notes
 
 * Ensure the backend API is running before using the frontend.
-* If running the API locally, update the frontend's `script.js` to point to `http://127.0.0.1:5000`.
 * This is a basic example and might need adjustments based on your specific requirements and environment.

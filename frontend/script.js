@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedImage = imageNumber.value;
         imageUpload.value = "";
         if (selectedImage) {
-            fetch(`/image/${selectedImage}`)
+            fetch(`http://127.0.0.1:5000/image/${selectedImage}`) // Updated fetch
                 .then(response => response.blob())
                 .then(blob => {
                     previewImage.src = URL.createObjectURL(blob);
@@ -51,16 +51,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     predictButton.addEventListener('click', () => {
+        predictionResult.textContent = ''; // Clear previous result
+        console.log("Predict button clicked");
+
         if (imageUpload.files.length > 0) {
+            console.log("Image upload detected");
             const formData = new FormData();
             formData.append('image', imageUpload.files[0]);
 
-            fetch('/predict_upload', {
+            fetch('http://127.0.0.1:5000/predict_upload', { 
                 method: 'POST',
                 body: formData,
             })
-                .then(response => response.json())
+                .then(response => {
+                    console.log("API Response received", response);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log("Parsed JSON:", data);
                     if (data.prediction) {
                         predictionResult.textContent = `Prediction: ${data.prediction}`;
                     } else if (data.error) {
@@ -74,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     predictionResult.textContent = 'Prediction failed.';
                 });
         } else if (imageNumber.value) {
-            fetch('/predict_lib', {
+            fetch('http://127.0.0.1:5000/predict_lib', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -100,41 +108,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    retrainZipUpload.addEventListener('change', () => {
+        if (retrainZipUpload.files.length > 0) {
+            const file = retrainZipUpload.files[0];
+            const formData = new FormData();
+            formData.append('zip_file', file);
+
+            fetch('http://127.0.0.1:5000/upload_retrain_data', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        document.getElementById('uploadMessage').textContent = data.message + ". Click the retrain button to trigger retraining process."; //display message.
+                    } else {
+                        document.getElementById('uploadMessage').textContent = 'Upload failed.'; //display message.
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('uploadMessage').textContent = 'Upload failed.'; //display message.
+                });
+        } else {
+            document.getElementById('uploadMessage').textContent = ""; // Clear message if no file.
+        }
+    });
+
     uploadRetrainDataButton.addEventListener('click', () => {
         retrainZipUpload.click();
     });
 
     retrainButton.addEventListener('click', () => {
-        if (!retrainZipUpload.files[0]) {
-            alert("Please select a ZIP file to upload.");
-            return;
-        }
-
-        const file = retrainZipUpload.files[0];
-        const formData = new FormData();
-        formData.append('zip_file', file);
-
-        fetch('/upload_retrain_images', {
+        fetch('http://127.0.0.1:5000/retrain', {
             method: 'POST',
-            body: formData,
         })
             .then(response => response.json())
             .then(data => {
                 if (data.retrain_id) {
                     monitorRetraining(data.retrain_id);
                 } else {
-                    alert(data.message || 'Upload failed.');
+                    alert(data.message || 'Retrain failed.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Upload failed.');
+                alert('Retrain failed.');
             });
     });
-
+    
     function monitorRetraining(retrainId) {
         const intervalId = setInterval(() => {
-            fetch(`/retrain_status/${retrainId}`)
+            fetch(`http://127.0.0.1:5000/retrain_status/${retrainId}`, { // Updated fetch
+                method: 'GET',
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'completed' || data.status === 'failed') {

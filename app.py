@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import tensorflow as tf
 import numpy as np
 from src import preprocessing
@@ -13,8 +13,10 @@ import sqlite3
 from tabulate import tabulate 
 import threading
 import time
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Global boto3 client
 try:
@@ -31,7 +33,7 @@ except Exception as e:
 # Database Configuration
 DATABASE_FILE = "my_base.db"
 
-# from database import create_table
+from database import create_table
 # # Create the 'images' table if it doesn't exist
 # create_table()
 
@@ -102,6 +104,27 @@ def upload_database_to_s3():
         print(f"Error uploading database to S3: {e}")
         time.sleep(5)  # Wait for 5 seconds before retrying
         upload_database_to_s3() #retry the upload.
+
+@app.route('/image/<image_id>', methods=['GET'])
+def get_image(image_id):
+    """Serves image data from the database."""
+    image_data = get_image_from_db(image_id)
+    if image_data is None:
+        return jsonify({'error': 'Image not found'}), 404
+
+    try:
+        # Create a temporary file to hold the image data
+        temp_dir = tempfile.gettempdir()
+        local_image_path = os.path.join(temp_dir, f"image_{image_id}.jpg")
+
+        with open(local_image_path, "wb") as f:
+            f.write(image_data)
+
+        # Send the file as a response
+        return send_file(local_image_path, mimetype='image/jpeg')
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/predict_upload', methods=['POST'])
 def predict_upload():
@@ -197,7 +220,9 @@ def retrain_and_monitor(retrain_id, zip_file_path):
 @app.route('/upload_retrain_data', methods=['POST'])
 def upload_retrain_data():
     """Uploads a zip file with images and _annotations.csv and saves data to the database."""
+    
     try:
+        create_table() #Create table before processing the upload.
         if 'zip_file' not in request.files:
             return jsonify({'error': 'No zip file uploaded'}), 400
 

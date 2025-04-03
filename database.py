@@ -27,7 +27,7 @@ def create_table():
             print(f"Error creating table: {e}")
     else:
         print("Could not connect to database")
-create_table()
+#create_table()
 
 def insert_image_data(image_path, label):
     """Inserts image data and label into the database."""
@@ -68,17 +68,17 @@ def populate_database_from_csv(csv_path, images_dir):
     except Exception as e:
         print(f"Error populating database from CSV: {e}")
 
-# Example usage 
-train_csv_path = "data/train/_annotations.csv"
-train_images_dir = "data/train/images"
+# # Example usage 
+# train_csv_path = "dataset/train/_annotations.csv"
+# train_images_dir = "dataset/train/images"
 
-test_csv_path = "data/test/_annotations.csv"
-test_images_dir = "data/test/images"
+# test_csv_path = "dataset/test/_annotations.csv"
+# test_images_dir = "dataset/test/images"
 
-valid_csv_path = "data/valid/_annotations.csv"
-valid_images_dir = "data/valid/images"
+# valid_csv_path = "dataset/valid/_annotations.csv"
+# valid_images_dir = "dataset/valid/images"
 
-populate_database_from_csv(train_csv_path, train_images_dir)
-populate_database_from_csv(test_csv_path, test_images_dir)
-populate_database_from_csv(valid_csv_path, valid_images_dir)
+# populate_database_from_csv(train_csv_path, train_images_dir)
+# populate_database_from_csv(test_csv_path, test_images_dir)
+# populate_database_from_csv(valid_csv_path, valid_images_dir)
 
