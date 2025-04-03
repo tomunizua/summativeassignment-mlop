@@ -16,6 +16,18 @@ import time
 
 app = Flask(__name__)
 
+# Global boto3 client
+try:
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        region_name=os.environ.get('AWS_DEFAULT_REGION'),
+    )
+except Exception as e:
+    print(f"Error initializing boto3 client: {e}")
+    s3_client = None
+
 # Database Configuration
 DATABASE_FILE = "my_base.db"
 
@@ -47,7 +59,6 @@ def get_db_connection():
         if not os.path.exists(local_db_path):
             # Download from S3 if it doesn't exist
             print("Downloading database from S3...")
-            s3 = boto3.client("s3")
             s3.download_file(bucket_name, DATABASE_FILE, local_db_path)
             print("Database downloaded from S3.")
 
@@ -84,7 +95,6 @@ def get_image_from_db(image_id):
 def upload_database_to_s3():
     """Uploads the database to S3."""
     try:
-        s3 = boto3.client("s3")
         local_db_path = os.path.join(tempfile.gettempdir(), DATABASE_FILE)
         s3.upload_file(local_db_path, bucket_name, DATABASE_FILE)
         print("Database uploaded to S3.")

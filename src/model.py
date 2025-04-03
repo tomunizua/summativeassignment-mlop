@@ -9,7 +9,16 @@ import sqlite3
 from sklearn.metrics import classification_report
 
 # Create the S3 client
-s3 = boto3.client('s3', region_name='eu-north-1')
+try:
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        region_name=os.environ.get('AWS_DEFAULT_REGION'),
+    )
+except Exception as e:
+    print(f"Error initializing boto3 client: {e}")
+    s3_client = None
 
 # Database Configuration
 DATABASE_FILE = "my_base.db"
