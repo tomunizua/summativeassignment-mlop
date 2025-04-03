@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Analysis Visualizations</title>
+  <link rel="stylesheet" href="visualization.css">
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" id="backButton">Back to Prediction and Retraining</a>
+
+    <section class="visualization-section" id="exampleImagesSection">
+      <h2>Examples Images with Class Labels</h2>
+      <p>This visualization shows a few example images from each class, along with their predicted and actual labels. It helps us understand the types of images the model is classifying.</p>
+      <div id="exampleImagesContainer" class="image-grid">
+        <img src="assets\bxwclassexamples.png" alt="Class 1 Image 1">
+        <img src="assets\healthyclassexamples.png" alt="Class 2 Image 1">
+        </div>
+    </section>
+
+    <section class="visualization-section" id="pixelDistributionSection">
+      <h2>Pixel Value Distribution</h2>
+      <p>This visualization gives insight into the overall brightness and color balance of the dataset, using 3 images as examples</p>
+      <div id="pixelDistributionContainer" class="image-grid">
+        <img src="assets\pixeldistribution1.png" alt="Pixel Distribution 1">
+        <img src="assets\pixeldistribution2.png" alt="Pixel Distribution 2">
+        <img src="assets\pixeldistribution3.png" alt="Pixel Distribution 3">
+        </div>
+    </section>
+
+    <section class="visualization-section" id="imageSizeDistributionSection">
+      <h2>Image Size/Aspect Ratio Distribution</h2>
+      <p>This visualization shows the distribution of image sizes or aspect ratios. From the graph we can see that all the images in the dataset have the same dimensions.</p>
+      <div id="imageSizeDistributionContainer" class="image-grid">
+        <img src="assets\imagesize.png" alt="Image Size Distribution">
+        </div>
+    </section>
+
+    <section class="visualization-section" id="classDistributionSection">
+      <h2>Class Distribution</h2>
+      <p>This visualization shows how many images belong to each class. It helps us understand if the dataset is balanced or imbalanced. From the graph, we can say that this dataset is fairly balanced. </p>
+      <div id="classDistributionContainer" class="image-grid">
+        <img src="assets\classdistribution.png" alt="Class Distribution">
+        </div>
+    </section>
+
+    <section class="visualization-section" id="brightnessContrastSection">
+        <h2>Image Brightness/Contrast Distribution</h2>
+        <p>This visualization gives insight into the brightness and contrast of the images in the dataset</p>
+        <div id="brightnessContrastContainer" class="image-grid">
+            <img src = "assets\brightcontrastdistribution.png" alt = "Brightness distribution">
+        </div>
+    </section>
+
+  </div>
+  <script src="visualization.js"></script>
+</body>
+</html>

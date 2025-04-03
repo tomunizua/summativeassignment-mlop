@@ -1,8 +1,9 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4faff;
+    background-color: #f4f4f4;
     margin: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -12,7 +13,7 @@ body {
     width: 80%; 
     max-width: 900px;
     padding: 40px;
-    background-color: #e0f2fe;
+    background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -46,7 +47,7 @@ h1, h2 {
 
 .file-upload-button {
     padding: 15px 30px;
-    border: 2px dashed #a8dadc;
+    border: 2px dashed #a8dcad;
     border-radius: 5px;
     background-color: #ffffff;
     color: #4a6572;
@@ -64,7 +65,7 @@ h1, h2 {
 
 input[type="number"] {
     padding: 10px;
-    border: 1px solid #a8dadc;
+    border: 1px solid #a8dcad;
     border-radius: 5px;
     width: 80%;
     margin-bottom: 10px;
@@ -74,7 +75,7 @@ button {
     padding: 12px 25px;
     border: none;
     border-radius: 5px;
-    background-color: #18b6bc;
+    background-color: #4CAF50;
     color: #ffffff;
     cursor: pointer;
     font-size: 16px;
@@ -95,13 +96,13 @@ button:hover {
 .image-placeholder {
     width: 300px;
     height: 300px;
-    border: 2px dashed #a8dadc;
+    border: 2px dashed #a8dcad;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #a8dadc;
+    color: #a8dcad;
     font-size: 24px;
 }
 
@@ -136,19 +137,23 @@ label {
     color: #4a6572;
 }
 
+.space {
+    height: 30px;
+}
+
 .navigation a {
     text-decoration: none;
-    color: #72c5d4;
+    color: #4CAF50;
     font-weight: bold;
     padding: 10px 20px;
-    border: 2px solid #72c5d4;
+    border: 2px solid #4CAF50;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
 .navigation a:hover {
-    background-color: #ffffff;
-    color: #4a6572;
+    background-color: #4CAF50;
+    color: white;
 }
 
 .retrain-section {
@@ -189,7 +194,7 @@ label {
 }
 
 .retrain-section button#uploadRetrainDataButton {
-    background-color: #18b6bc;
+    background-color: #4CAF50;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -210,5 +215,25 @@ label {
     border: 1px solid #eee;
     background-color: #f0f0f0;
     border-radius: 5px;
-    white-space: pre-wrap; /* Preserve formatting */
+    white-space: pre-wrap; 
 }
+
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: #e7e5e5;
+    margin-top: 20px; 
+  }
+  
+  footer p {
+    margin: 0;
+    font-size: 14px;
+    color: #434343;
+  }
+
+  .line-separator{
+    background-color: #a8dcad;
+    height: 5px;
+    margin-bottom: 50px;
+  }

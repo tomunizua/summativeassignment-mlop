@@ -1,0 +1,74 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    display: flex; 
+    justify-content: center; 
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  #backButton {
+    display: inline-block; 
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none; 
+    margin-bottom: 20px;
+    font-size: 16px;
+    align-self: flex-start; 
+  }
+  
+  #backButton:hover {
+    background-color: #45a049;
+  }
+
+  .visualization-section {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center; 
+  }
+  
+  .visualization-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  /* Stack images vertically for specific sections */
+  #exampleImagesContainer,
+  #pixelDistributionContainer,
+  #brightnessContrastContainer {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+  }
+  
+  .image-grid {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+  }
+  
+  .image-grid img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin: 10px; 
+  }
+  
+  .image-grid p {
+    text-align: center;
+    margin-top: 5px;
+    color: #555;
+  }
