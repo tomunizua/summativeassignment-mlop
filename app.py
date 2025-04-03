@@ -19,6 +19,10 @@ app = Flask(__name__)
 # Database Configuration
 DATABASE_FILE = "my_base.db"
 
+# from database import create_table
+# # Create the 'images' table if it doesn't exist
+# create_table()
+
 # Model Loading (from S3)
 bucket_name = "theosummative"
 s3_model_file = "models/second_model.keras"
@@ -76,6 +80,18 @@ def get_image_from_db(image_id):
     finally:
         if conn:
             conn.close()
+
+def upload_database_to_s3():
+    """Uploads the database to S3."""
+    try:
+        s3 = boto3.client("s3")
+        local_db_path = os.path.join(tempfile.gettempdir(), DATABASE_FILE)
+        s3.upload_file(local_db_path, bucket_name, DATABASE_FILE)
+        print("Database uploaded to S3.")
+    except Exception as e:
+        print(f"Error uploading database to S3: {e}")
+        time.sleep(5)  # Wait for 5 seconds before retrying
+        upload_database_to_s3() #retry the upload.
 
 @app.route('/predict_upload', methods=['POST'])
 def predict_upload():
@@ -191,6 +207,7 @@ def upload_retrain_data():
 
         if os.path.exists(csv_path) and os.path.exists(images_dir):
             model.populate_retrain_database_from_csv(csv_path, images_dir)
+            upload_database_to_s3()
             return jsonify({'message': 'Data uploaded to database successfully'}), 200
         else:
             return jsonify({'error': 'Missing images folder or _annotations.csv in zip file'}), 400
@@ -213,18 +230,15 @@ def retrain():
         global loaded_model
         loaded_model = model.load_model_from_s3(bucket_name, "models/retrained_model.keras", os.path.join(tempfile.gettempdir(), "retrained_model.keras"))
 
+        report = metrics['report']
         accuracy = metrics['accuracy']
-        f1_score = metrics['f1_score']
-        precision = metrics['precision']
-        recall = metrics['recall']
+        loss = metrics['loss']
 
-        metric_names = ["Accuracy", "F1 Score", "Precision", "Recall"]
-        metric_values = [accuracy, f1_score, precision, recall]
-
-        table_data = [metric_values]  # Values as a single row
-        table_string = tabulate(table_data, headers=metric_names, tablefmt="grid")
-
-        return jsonify({'message': 'Retraining completed', 'metrics_table': table_string})
+        return jsonify({'message': 'Retraining completed', 'metrics': {
+            'accuracy': accuracy,
+            'loss': loss,
+            'report': report
+        }})
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -6,6 +6,7 @@ import os
 import pickle
 import tempfile
 import sqlite3
+from sklearn.metrics import classification_report
 
 # Create the S3 client
 s3 = boto3.client('s3', region_name='eu-north-1')
@@ -119,7 +120,14 @@ def retrain_model_from_db(database_file, bucket_name, s3_model_file, local_model
             pickle.dump(label_encoder, f)
         save_model_to_s3(bucket_name, "models/label_encoder.pkl", label_encoder_local_path)
 
-        return evaluation_metrics
+        # Generate classification report
+        predicted_labels = loaded_model.predict(preprocessed_images)
+        predicted_labels = tf.argmax(predicted_labels, axis=1).numpy()
+        decoded_labels = label_encoder.inverse_transform(encoded_labels)
+        decoded_predicted_labels = label_encoder.inverse_transform(predicted_labels)
+        report = classification_report(decoded_labels, decoded_predicted_labels)
+
+        return {"loss": evaluation_metrics[0], "accuracy": evaluation_metrics[1], "report": report}
 
     except Exception as e:
         print(f"Error retraining model: {e}")
