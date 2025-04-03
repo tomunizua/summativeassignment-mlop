@@ -45,7 +45,7 @@ h1, h2 {
     flex-direction: column;
 }
 
-.file-upload-button {
+.file-upload-button, #uploadRetrainDataButton {
     padding: 15px 30px;
     border: 2px dashed #a8dcad;
     border-radius: 5px;
@@ -176,7 +176,7 @@ label {
 
 /* Style for the file upload button */
 .retrain-section .file-upload-button {
-    color: white;
+    color: #4a6572;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
@@ -193,7 +193,7 @@ label {
     display: none;
 }
 
-.retrain-section button#uploadRetrainDataButton {
+.retrain-section button#retrainButton {
     background-color: #4CAF50;
     color: white;
     padding: 10px 15px;
@@ -204,7 +204,7 @@ label {
     margin-top: 10px;
 }
 
-.retrain-section button#uploadRetrainDataButton:hover {
+.retrain-section button#retrainButton:hover {
     background-color: #006a88; 
 }
 

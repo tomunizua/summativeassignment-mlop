@@ -46,8 +46,13 @@
         <div class="retrain-section">
             <h2>Retrain Model</h2>
             <p>Retrain the model with uploaded images in a ZIP file.</p>
-            <input type="file" id="retrainDataUpload" accept=".zip">
-            <button id="uploadRetrainDataButton">Upload Retrain Data</button>
+            <div id="uploadRetrainDataButton">
+                <label for="retrainZipUpload" class="file-upload-button">
+                    <i class="fas fa-upload"></i> Choose File
+                </label>
+                <input type="file" id="retrainZipUpload" accept=".zip" style="display: none;">
+            </div>
+            <button id="retrainButton"> Start Retrain</button>
             <div id="retrainMetrics"></div>
         </div>
 
